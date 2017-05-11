@@ -19,9 +19,9 @@ var opts struct {
 
 func handleClient(conn *net.UDPConn, fn string) {
 	b := make([]byte, opts.Buffer)
-	n, addr, err := conn.ReadFromUDP(b)
-	if err != nil {
-		log.Printf("Read from UDP failed, err: %v", err)
+	n, addr, e := conn.ReadFromUDP(b)
+	if e != nil {
+		log.Printf("Read from UDP failed, err: %v", e)
 		return
 	}
 	log.Printf("Read from client(%v:%v), len: %v\n%v\n", addr.IP, addr.Port, n, string(b[:n]))
@@ -38,7 +38,7 @@ func handleClient(conn *net.UDPConn, fn string) {
 			return
 		}
 	} else { // Write to stdout
-		if _, err = os.Stdout.Write(b[:n]); err != nil {
+		if _, err := os.Stdout.Write(b[:n]); err != nil {
 			log.Printf("Write stdout failed, err: %v", err)
 			return
 		}
