@@ -24,7 +24,7 @@ func handleClient(conn *net.UDPConn, fn string) {
 		log.Printf("Read from UDP failed, err: %v", e)
 		return
 	}
-	log.Printf("Read from client(%v:%v), len: %v\n%v\n", addr.IP, addr.Port, n, string(b[:n]))
+	log.Printf("Read from client(%v:%v), len: %v\n", addr.IP, addr.Port, n)
 
 	if len(opts.File) != 0 {
 		f, err := os.OpenFile(opts.File, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
