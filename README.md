@@ -1,6 +1,6 @@
 # udplisten
 
-Simple Golang UDP Server which writes received packets to a file.
+Simple Golang UDP Server.
 
 ## Build
 * `go build main.go -o udplisten`
