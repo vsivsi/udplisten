@@ -11,10 +11,12 @@ import (
 )
 
 var opts struct {
-	Host   string `long:"host" default:"0.0.0.0" description:"Interface IP to bind to"`
-	Port   uint16 `long:"port" default:"1234" description:"UDP port to bind to"`
-	File   string `long:"file" default:"" description:"Append received data to"`
-	Buffer int    `long:"buffer" default:"1500" description:"Max receive buffer size"`
+	Host    string `short:"h" long:"host" default:"0.0.0.0" description:"Interface IP to bind to"`
+	Port    uint16 `short:"p" long:"port" default:"1234" description:"UDP port to bind to"`
+	File    string `short:"f" long:"file" default:"" description:"Append received data to"`
+	Buffer  int    `short:"b" long:"buffer" default:"1500" description:"Max receive buffer size"`
+	Newline bool   `short:"n" long:"newline" description:"Add newline to end of each message"`
+	Quiet   bool   `short:"q" long:"quiet" description:"Suppress informational status on stderr"`
 }
 
 func handleClient(conn *net.UDPConn, fn string) {
@@ -24,8 +26,13 @@ func handleClient(conn *net.UDPConn, fn string) {
 		log.Printf("Read from UDP failed, err: %v", e)
 		return
 	}
-	log.Printf("Read from client(%v:%v), len: %v\n", addr.IP, addr.Port, n)
-
+	if !opts.Quiet {
+		log.Printf("Read from client(%v:%v), len: %v\n", addr.IP, addr.Port, n)
+	}
+	if opts.Newline && n < len(b) && b[n-1] != '\n' {
+		b[n] = '\n'
+		n += 1
+	}
 	if len(opts.File) != 0 {
 		f, err := os.OpenFile(opts.File, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 		if err != nil {
@@ -64,8 +71,9 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	log.Printf("Starting udplistener at %v:%v", opts.Host, opts.Port)
-
+	if !opts.Quiet {
+		log.Printf("Starting udplistener at %v:%v", opts.Host, opts.Port)
+	}
 	for {
 		handleClient(l, opts.File)
 	}
